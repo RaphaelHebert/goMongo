@@ -100,7 +100,7 @@ func (uc *userController) GetUser(w http.ResponseWriter, req *http.Request, p ht
 		fmt.Println(msg)
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprintf(w, "%s\n", msg)
-		return
+		return 
 	}
 	// to send JSON 
 	w.Header().Set("Content-Type", "application/json") 
@@ -108,10 +108,31 @@ func (uc *userController) GetUser(w http.ResponseWriter, req *http.Request, p ht
 	fmt.Fprintf(w, "%s\n",res)
 }
 
+func (uc *userController) GetUsers(w http.ResponseWriter, req *http.Request, p httprouter.Params) {
+	cur, err := uc.client.Database("tuto").Collection("users").Find(context.TODO(), bson.D{{}})
+	if err != nil {
+		msg := fmt.Errorf("getuser: %v", err)
+		fmt.Println(msg)
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprintf(w, "%s\n", msg)
+		return 
+	}
+	var results []model.User
+	if err = cur.All(context.TODO(), &results); err != nil {
+		panic(err)
+	}
+	resJSON, _ := json.Marshal(results)
+	fmt.Fprintf(w, "%s\n", resJSON)
+}
+
 func (uc userController) CreateUser(w http.ResponseWriter, req *http.Request, p httprouter.Params) {
 	u := model.User{}
 
-	// parse payload
+	// get value from form
+	u.Name = req.FormValue("name")
+	u.Email = req.FormValue("email")
+
+	// parse payload (overrides form value)
 	json.NewDecoder(req.Body).Decode(&u)
 	// ad Id
 	u.Id = primitive.NewObjectID()

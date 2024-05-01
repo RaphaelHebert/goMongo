@@ -49,6 +49,7 @@ func main() {
 	jr.GET("/user/:id", uctl.GetUser)
 	jr.POST("/user", uctl.CreateUser)
 	jr.PUT("/user", uctl.UpdateUser)
+	jr.GET("/users", uctl.GetUsers)
 	http.ListenAndServe("localhost:8080", jr)
 	
 	defer func() {
