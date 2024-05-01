@@ -111,7 +111,7 @@ func (uc *userController) GetUser(w http.ResponseWriter, req *http.Request, p ht
 func (uc *userController) GetUsers(w http.ResponseWriter, req *http.Request, p httprouter.Params) {
 	cur, err := uc.client.Database("tuto").Collection("users").Find(context.TODO(), bson.D{{}})
 	if err != nil {
-		msg := fmt.Errorf("getuser: %v", err)
+		msg := fmt.Errorf("getusers: %v", err)
 		fmt.Println(msg)
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprintf(w, "%s\n", msg)
